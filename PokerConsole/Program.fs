@@ -4,6 +4,7 @@ open Hands
 open Ranges
 open Preflop
 open Import
+open Excel.Import
 
 let (|Int|_|) str =
    match System.Int32.TryParse(str) with
@@ -27,15 +28,16 @@ let rec enterNumber text min max =
     Console.WriteLine "Not a valid number!"
     enterNumber text min max
 
-let rec enterVillainAction () =
+let rec enterVillainAction bb stack =
   Console.Write "What was the Villain action (limp, raise xx): "
   let actionString = Console.ReadLine()
   match actionString.ToLowerInvariant() with
-  | "limp" -> Limp
-  | RaiseInt i -> Raise(i, i)
+  | "limp" -> WasLimp
+  | RaiseInt i when i >= stack -> WasRaiseAllIn
+  | RaiseInt i -> WasRaise(i / bb)
   | _ -> 
     Console.WriteLine "Not a valid action!"
-    enterVillainAction ()
+    enterVillainAction bb stack
 
 let rec enterPosition () =
   Console.Write "Is Hero IP or OOP (IP/OOP): "
@@ -51,10 +53,10 @@ let rec enterPosition () =
 let main argv =   
   Console.Write "Importing excel files..."
   let fileNameIP = System.IO.Directory.GetCurrentDirectory() + @"\IPinput.xlsx"
-  let rulesIP = importRuleFromExcel importRulesIP fileNameIP |> List.ofSeq
+  let rulesIP = importExcel (importRulesByStack importRulesIP) fileNameIP |> List.ofSeq
   let fileNameOOP = System.IO.Directory.GetCurrentDirectory() + @"\OOPinput.xlsx"
-  let rulesOOP = importRuleFromExcel importRulesOOP fileNameOOP |> List.ofSeq
-  let rules = Seq.concat [|rulesIP;rulesOOP|]
+  let rulesOOP = importExcel (importRulesByStack importRulesOOP) fileNameOOP |> List.ofSeq
+  let rules = List.concat [|rulesIP;rulesOOP|]
   let decide = decideOnRules rules
   Console.Write " done!\n\n"
 
@@ -84,8 +86,8 @@ let main argv =
         if not (String.IsNullOrWhiteSpace handString) then
           let parsed = parseHand handString
 
-          let previous = if position = OOP then [enterVillainAction()] else []
-          let result = decide effectiveStack previous parsed
+          let previous = if position = OOP then [enterVillainAction (decimal bb) (decimal stack)] else []
+          let result = decide effectiveStack 0 0m previous parsed
 
           printAction result
 
@@ -94,14 +96,14 @@ let main argv =
 
             let raiseSize = enterNumber "Villain raises. What's the raise size" (bb * 2) stack 
             let x = (raiseSize / bb) |> decimal
-            let onRaise = decide effectiveStack [Limp; Raise(x, x)] parsed
+            let onRaise = decide effectiveStack 0 0m [WasLimp; WasRaise(x)] parsed
             printAction onRaise
 
           | Some(MinRaise) ->
             let raiseSize = enterNumber "Villain raises. What's the raise size" (bb * 3) stack 
             let x = (raiseSize |> decimal) / (bb |> decimal)
-            let allActions = if raiseSize = stack then List.append previous [Raise(2m, 2m); RaiseAllIn] else List.append previous [Raise(2m, 2m); Raise(x, x)]
-            let onRaise = decide effectiveStack allActions parsed
+            let allActions = if raiseSize = stack then List.append previous [WasRaise(2m); WasRaiseAllIn] else List.append previous [WasRaise(2m); WasRaise(x)]
+            let onRaise = decide effectiveStack 0 0m allActions parsed
             printAction onRaise
 
           | _ -> ()

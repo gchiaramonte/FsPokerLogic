@@ -56,17 +56,24 @@
   <Import Project="$(FSharpTargetsPath)" />
   <ItemGroup>
     <Compile Include="AssemblyInfo.fs" />
+    <Compile Include="ActorPatterns.fs" />
+    <Compile Include="Click.fs" />
+    <Compile Include="Stats.fs" />
+    <Compile Include="Decide.fs" />
+    <Compile Include="Recognize.fs" />
+    <Compile Include="Find.fs" />
+    <Compile Include="Enable.fs" />
     <Compile Include="Program.fs" />
     <None Include="App.config" />
     <Content Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Akka">
-      <HintPath>..\packages\Akka.1.0.6\lib\net45\Akka.dll</HintPath>
+      <HintPath>..\packages\Akka.1.1.0\lib\net45\Akka.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Akka.FSharp">
-      <HintPath>..\packages\Akka.FSharp.1.0.6\lib\net45\Akka.FSharp.dll</HintPath>
+      <HintPath>..\packages\Akka.FSharp.1.1.0\lib\net45\Akka.FSharp.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="FSharp.PowerPack">
@@ -78,7 +85,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="FsPickler">
-      <HintPath>..\packages\FsPickler.1.2.21\lib\net45\FsPickler.dll</HintPath>
+      <HintPath>..\packages\FsPickler.2.3.0\lib\net45\FsPickler.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.Office.Interop.Excel, Version=15.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c" />
@@ -87,25 +94,52 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="Newtonsoft.Json">
-      <HintPath>..\packages\Newtonsoft.Json.7.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <HintPath>..\packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Collections.Immutable">
+      <HintPath>..\packages\System.Collections.Immutable.1.2.0\lib\portable-net45+win8+wp8+wpa81\System.Collections.Immutable.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.Net.Http" />
     <Reference Include="System.Numerics" />
     <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Excel\Excel.fsproj">
+      <Name>Excel</Name>
+      <Project>{9fa0db48-55aa-47ad-b1f5-933bf8c59f41}</Project>
+      <Private>True</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\Hands\Cards.fsproj">
+      <Name>Cards</Name>
+      <Project>{a1b0af49-be85-4678-8bb2-3bcb46392a9f}</Project>
+      <Private>True</Private>
+    </ProjectReference>
     <ProjectReference Include="..\Interaction\Interaction.csproj">
       <Name>Interaction</Name>
       <Project>{e9f14821-12cc-409d-97c3-ca8062ebb085}</Project>
       <Private>True</Private>
     </ProjectReference>
+    <ProjectReference Include="..\MouseTest\MouseTest.fsproj">
+      <Name>MouseTest</Name>
+      <Project>{5c19a419-096b-47b8-b0fe-784aed6cd3f7}</Project>
+      <Private>True</Private>
+    </ProjectReference>
     <ProjectReference Include="..\PokerConsole\PokerConsole.fsproj">
       <Name>PokerConsole</Name>
       <Project>{281918a1-713f-4931-8f0b-7557b4ca8534}</Project>
+      <Private>True</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\PostFlop\PostFlop.fsproj">
+      <Name>PostFlop</Name>
+      <Project>{537d79d1-3ad0-4679-b460-bdf7deddec7f}</Project>
       <Private>True</Private>
     </ProjectReference>
     <ProjectReference Include="..\Recognition\Recognition.fsproj">

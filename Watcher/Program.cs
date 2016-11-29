@@ -21,18 +21,18 @@ namespace Watcher
             Console.ReadKey();
             while (true)
             {
-                var windows = InteractionFacade.GetWindowList(screenSize, targetSize, "Heads Up ").ToArray();
+                var windows = InteractionFacade.GetWindowList(screenSize, targetSize, "Heads-Up(").ToArray();
                 foreach (WindowInfo window in windows)
                 {
-                    var parts = window.Title.Split('-').Select(s => s.Trim()).ToArray();
-                    if (parts.Length >= 3)
+                    var parts = window.Title.Split('(').Select(s => s.Trim()).ToArray();
+                    if (parts.Length >= 2)
                     {
-                        var tableNumber = parts[2];
+                        var tableNumber = parts[1].Split(')')[0];
                         Console.WriteLine($"\n{tableNumber} ({window.Size.Width}x{window.Size.Height})");
 
                         try
                         {
-                            var result = ScreenRecognition.recognizeScreen(window.Bitmap);
+                            var result = WinamaxRecognition.recognizeScreenWinamax(window.Bitmap);
                             foreach (var s in ScreenRecognition.print(result))
                                 Console.WriteLine(s);
                             //Console.WriteLine($"Total pot: {result.TotalPot}");
@@ -45,7 +45,7 @@ namespace Watcher
                         {
                             Console.WriteLine(ex.Message);
                             Console.WriteLine(ex.StackTrace);
-                            SaveBitmap(window.Bitmap, tableNumber);
+                            Dumper.SaveBitmap(window.Bitmap, tableNumber, false);
                         }
                     }
                 }
@@ -56,26 +56,12 @@ namespace Watcher
                 {
                     foreach (WindowInfo window in windows)
                     {
-                        var parts = window.Title.Split('-').Select(s => s.Trim()).ToArray();
-                        if (parts.Length >= 3)
-                            SaveBitmap(window.Bitmap, parts[2]);
+                        var parts = window.Title.Split(' ').Select(s => s.Trim()).ToArray();
+                        if (parts.Length >= 2)
+                            Dumper.SaveBitmap(window.Bitmap, parts[0] + Guid.NewGuid().ToString().Substring(0, 6), false);
                     }
                 }
             }
-        }
-
-        private static void SaveBitmap(Bitmap bitmap, string tableName)
-        {
-            for (int i = 50; i < 150; i++)
-                for (int j = 1; j < 30; j++)
-                    bitmap.SetPixel(i, j, Color.White);
-            for (int i = 77; i < 161; i++)
-                for (int j = 328; j < 338; j++)
-                    bitmap.SetPixel(i, j, Color.White);
-            for (int i = 495; i < 161; i++)
-                for (int j = 328; j < 338; j++)
-                    bitmap.SetPixel(i, j, Color.White);
-            bitmap.Save($"{tableName}_{Guid.NewGuid().ToString().Substring(0, 4)}.bmp");
         }
     }
 }
